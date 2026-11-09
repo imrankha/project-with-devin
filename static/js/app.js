@@ -207,7 +207,7 @@
   function startListening() {
     if (!SpeechRecognition) {
       els.micUnsupported.classList.remove("hidden");
-      els.typeArea.classList.remove("hidden");
+      setTypingOpen(true);
       return;
     }
     const rec = new SpeechRecognition();
@@ -276,7 +276,7 @@
     if (!state.current) return;
     if (!transcript) {
       showMessage("No recitation was captured. Please try again and speak clearly.");
-      els.arabic.classList.remove("concealed");
+      if (els.typeArea.classList.contains("hidden")) els.arabic.classList.remove("concealed");
       return;
     }
     const [surah, ayah] = state.current.verse_key.split(":");
@@ -291,8 +291,14 @@
       showMessage(e.message);
       if (e.data && e.data.progress) renderProgress(e.data.progress);
     } finally {
-      els.arabic.classList.remove("concealed");
+      setTypingOpen(false);
     }
+  }
+
+  function setTypingOpen(open) {
+    els.typeArea.classList.toggle("hidden", !open);
+    els.arabic.classList.toggle("concealed", open);
+    els.toggleType.textContent = open ? "Hide typing" : "Type instead";
   }
 
   function renderResult(r) {
@@ -338,11 +344,9 @@
   els.micBtn.addEventListener("click", startListening);
   els.stopBtn.addEventListener("click", () => stopListening(false));
   els.toggleType.addEventListener("click", () => {
-    const show = els.typeArea.classList.contains("hidden");
-    els.typeArea.classList.toggle("hidden", !show);
-    els.arabic.classList.toggle("concealed", show);
-    els.toggleType.textContent = show ? "Hide typing" : "Type instead";
-    if (show) els.typed.focus();
+    const open = els.typeArea.classList.contains("hidden");
+    setTypingOpen(open);
+    if (open) els.typed.focus();
   });
   els.checkTyped.addEventListener("click", () => submitRecitation(els.typed.value.trim()));
 
