@@ -285,13 +285,13 @@
         method: "POST",
         body: JSON.stringify({ transcript }),
       });
+      setTypingOpen(false);
       renderResult(result);
       renderProgress(result.progress);
     } catch (e) {
       showMessage(e.message);
       if (e.data && e.data.progress) renderProgress(e.data.progress);
-    } finally {
-      setTypingOpen(false);
+      if (els.typeArea.classList.contains("hidden")) els.arabic.classList.remove("concealed");
     }
   }
 
