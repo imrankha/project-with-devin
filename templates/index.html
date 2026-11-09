@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hifz Helper – Quran Memorization</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Noto+Nastaliq+Urdu&family=Noto+Sans+Devanagari&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <h1>Hifz Helper</h1>
+      <p class="tagline">Read, repeat {{ required_reads }} times, then recite from memory.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card selectors">
+      <div class="field">
+        <label for="surah-select">Surah</label>
+        <select id="surah-select" disabled>
+          <option value="">Loading surahs…</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="ayah-select">Ayah</label>
+        <select id="ayah-select" disabled>
+          <option value="">Select a surah first</option>
+        </select>
+      </div>
+      <div class="nav-buttons">
+        <button id="prev-ayah" class="btn btn-ghost" disabled>&larr; Previous</button>
+        <button id="next-ayah" class="btn btn-ghost" disabled>Next &rarr;</button>
+      </div>
+    </section>
+
+    <div id="message" class="message hidden" role="status"></div>
+
+    <section id="placeholder" class="card placeholder">
+      <p>Select a surah and an ayah to begin memorizing.</p>
+    </section>
+
+    <div id="ayah-view" class="hidden">
+      <section class="card ayah-card">
+        <div class="ayah-header">
+          <span id="ayah-ref" class="badge"></span>
+          <span id="memorized-badge" class="badge badge-success hidden">Memorized</span>
+          <button id="play-audio" class="btn btn-ghost btn-small" type="button">&#9654; Listen</button>
+          <audio id="ayah-audio" preload="none"></audio>
+        </div>
+        <p id="arabic-text" class="arabic" lang="ar" dir="rtl"></p>
+        <div class="translations">
+          <div class="translation">
+            <h3>English</h3>
+            <p id="trans-english"></p>
+          </div>
+          <div class="translation">
+            <h3>Hindi</h3>
+            <p id="trans-hindi" class="hindi" lang="hi"></p>
+          </div>
+          <div class="translation">
+            <h3>Urdu</h3>
+            <p id="trans-urdu" class="urdu" lang="ur" dir="rtl"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-title">
+          <h2>Word by word</h2>
+          <span class="hint">Tap a word to hear it</span>
+        </div>
+        <div id="words" class="words" dir="rtl"></div>
+      </section>
+
+      <section class="card counter-card">
+        <h2>Reading counter</h2>
+        <p class="hint">Read the ayah aloud, then tap the button. You need at least {{ required_reads }} readings before reciting.</p>
+        <div class="counter">
+          <div class="counter-ring" id="counter-ring">
+            <span id="counter-value">0</span>
+            <small>/ <span id="counter-target">{{ required_reads }}</span></small>
+          </div>
+          <div class="counter-actions">
+            <button id="read-btn" class="btn btn-primary btn-large" type="button">I read it (+1)</button>
+            <button id="reset-btn" class="btn btn-ghost btn-small" type="button">Reset progress</button>
+          </div>
+        </div>
+        <div class="progress-bar"><div id="progress-fill"></div></div>
+      </section>
+
+      <section class="card recite-card">
+        <h2>Recite from memory</h2>
+        <div id="recite-locked" class="locked">
+          <p>Recitation unlocks after <strong>{{ required_reads }}</strong> readings. <span id="reads-left"></span></p>
+        </div>
+        <div id="recite-unlocked" class="hidden">
+          <p class="hint">The Arabic text is hidden while you recite. Allow microphone access and recite the ayah in Arabic.</p>
+          <div class="recite-actions">
+            <button id="mic-btn" class="btn btn-primary" type="button">&#127908; Start reciting</button>
+            <button id="stop-btn" class="btn btn-danger hidden" type="button">&#9632; Stop &amp; check</button>
+            <button id="toggle-type" class="btn btn-ghost btn-small" type="button">Type instead</button>
+          </div>
+          <p id="mic-unsupported" class="hint warn hidden">Speech recognition isn't supported in this browser (use Chrome or Edge). You can type the ayah instead.</p>
+          <div id="live-transcript" class="transcript hidden" lang="ar" dir="rtl"></div>
+          <div id="type-area" class="hidden">
+            <textarea id="typed-recitation" rows="3" dir="rtl" lang="ar" placeholder="اكتب الآية من حفظك هنا"></textarea>
+            <button id="check-typed" class="btn btn-primary" type="button">Check</button>
+          </div>
+          <div id="result" class="result hidden">
+            <div id="result-verdict" class="verdict"></div>
+            <p id="result-score"></p>
+            <div id="result-words" class="result-words" dir="rtl" lang="ar"></div>
+            <p id="result-extra" class="hint"></p>
+            <p class="hint">Heard: <span id="result-transcript" lang="ar" dir="rtl"></span></p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer container">
+    <p>Quran text, translations, word-by-word meanings and audio from <a href="https://quran.com" target="_blank" rel="noopener">quran.com</a>.</p>
+  </footer>
+
+  <script>window.REQUIRED_READS = {{ required_reads }};</script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
