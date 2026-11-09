@@ -45,7 +45,14 @@ def compare(expected_words: list[str], transcript: str) -> dict:
     Returns per-word status ("correct" or "missed"), extra words that were
     recited but not in the ayah, an accuracy score and the memorized verdict.
     """
-    expected = [normalize_word(w) for w in expected_words]
+    # Some quran.com words contain a space (e.g. "يَا أَيُّهَا"), so align on
+    # sub-tokens and map results back to the original words.
+    expected: list[str] = []
+    owner: list[int] = []
+    for index, word in enumerate(expected_words):
+        for token in tokenize(word):
+            expected.append(token)
+            owner.append(index)
     recited = tokenize(transcript)
 
     # Greedy in-order alignment with a small look-ahead so a single skipped or
@@ -81,14 +88,20 @@ def compare(expected_words: list[str], transcript: str) -> dict:
             j += 1
     extras.extend(recited[j:])
 
-    correct = statuses.count("correct")
-    total = len(expected) or 1
+    correct_tokens = statuses.count("correct")
+    total_tokens = len(expected) or 1
     # Penalise extra words so reciting a different ayah does not pass.
-    accuracy = correct / max(total, correct + len(extras) * 0.5)
+    accuracy = correct_tokens / max(total_tokens, correct_tokens + len(extras) * 0.5)
+    word_statuses = ["correct"] * len(expected_words)
+    for index, status in zip(owner, statuses):
+        if status == "missed":
+            word_statuses[index] = "missed"
+    for index in set(range(len(expected_words))) - set(owner):
+        word_statuses[index] = "missed"
     return {
-        "words": statuses,
-        "correct": correct,
-        "total": len(expected),
+        "words": word_statuses,
+        "correct": word_statuses.count("correct"),
+        "total": len(expected_words),
         "extra_words": extras,
         "accuracy": round(accuracy, 3),
         "memorized": accuracy >= MEMORIZED_THRESHOLD,

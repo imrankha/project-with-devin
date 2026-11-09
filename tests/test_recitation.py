@@ -38,3 +38,11 @@ def test_extra_words_reduce_accuracy():
     assert result["words"] == ["correct"] * 4
     assert result["extra_words"]
     assert result["memorized"] is False
+
+
+def test_expected_word_with_space_matches_split_transcript():
+    words = ["يَا أَيُّهَا", "الْمُزَّمِّلُ"]
+    result = compare(words, "يا ايها المزمل")
+    assert result["memorized"]
+    assert result["words"] == ["correct", "correct"]
+    assert result["accuracy"] == 1.0
