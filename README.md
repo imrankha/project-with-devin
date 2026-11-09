@@ -29,7 +29,7 @@ Translations: Saheeh International (English), Maulana Azizul Haque al-Umari (Hin
 python3 -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-python app.py                    # http://localhost:5000
+python app.py                    # http://localhost:5000 (FLASK_DEBUG=1 for debug mode)
 ```
 
 Use **Google Chrome or Microsoft Edge** for microphone recitation (other browsers can use *Type instead*).
