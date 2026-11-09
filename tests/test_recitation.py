@@ -46,3 +46,10 @@ def test_expected_word_with_space_matches_split_transcript():
     assert result["memorized"]
     assert result["words"] == ["correct", "correct"]
     assert result["accuracy"] == 1.0
+
+
+def test_accuracy_counts_whole_words():
+    words = ["يَا أَيُّهَا", "الَّذِينَ", "آمَنُوا", "اتَّقُوا", "اللَّهَ", "حَقَّ"]
+    result = compare(words, "يا ايها الذين امنوا اتقوا الله")
+    assert result["correct"] == 5
+    assert not result["memorized"]

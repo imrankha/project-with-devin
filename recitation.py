@@ -88,19 +88,19 @@ def compare(expected_words: list[str], transcript: str) -> dict:
             j += 1
     extras.extend(recited[j:])
 
-    correct_tokens = statuses.count("correct")
-    total_tokens = len(expected) or 1
-    # Penalise extra words so reciting a different ayah does not pass.
-    accuracy = correct_tokens / max(total_tokens, correct_tokens + len(extras) * 0.5)
     word_statuses = ["correct"] * len(expected_words)
     for index, status in zip(owner, statuses):
         if status == "missed":
             word_statuses[index] = "missed"
     for index in set(range(len(expected_words))) - set(owner):
         word_statuses[index] = "missed"
+    correct = word_statuses.count("correct")
+    total = len(expected_words) or 1
+    # Penalise extra words so reciting a different ayah does not pass.
+    accuracy = correct / max(total, correct + len(extras) * 0.5)
     return {
         "words": word_statuses,
-        "correct": word_statuses.count("correct"),
+        "correct": correct,
         "total": len(expected_words),
         "extra_words": extras,
         "accuracy": round(accuracy, 3),
