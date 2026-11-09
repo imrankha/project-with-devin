@@ -5,6 +5,7 @@ in the payment step.
 """
 import logging
 import re
+import uuid
 from pathlib import Path
 from typing import Protocol
 
@@ -80,7 +81,7 @@ class PlaywrightCheckoutAgent:
                     page.wait_for_selector("#order-review")
 
                     Path(self.screenshot_dir).mkdir(parents=True, exist_ok=True)
-                    shot = str(Path(self.screenshot_dir) / f"checkout-{slug}.png")
+                    shot = str(Path(self.screenshot_dir) / f"checkout-{slug}-{uuid.uuid4().hex[:12]}.png")
                     page.screenshot(path=shot, full_page=True)
                     review = page.inner_text("#order-review")
                 finally:

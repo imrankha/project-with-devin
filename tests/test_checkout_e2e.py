@@ -54,4 +54,5 @@ def test_agent_logs_in_and_fills_checkout(shop_url, tmp_path, monkeypatch):
     result = agent.run("ValueStore", [], ShippingDetails(first_name="Asha", last_name="Rao", address="12 MG Road"))
     get_settings.cache_clear()
     assert result.status == "ready_for_payment", result.detail
-    assert (tmp_path / "checkout-valuestore.png").exists()
+    assert result.screenshot_path and result.screenshot_path.startswith(str(tmp_path / "checkout-valuestore-"))
+    assert len(list(tmp_path.glob("checkout-valuestore-*.png"))) == 1
