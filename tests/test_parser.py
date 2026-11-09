@@ -60,6 +60,11 @@ def test_llm_empty_list_is_rejected():
         parse_with_llm("hello", llm)
 
 
+def test_llm_invalid_json_raises_parse_error():
+    with pytest.raises(ParseError):
+        parse_with_llm("sugar 2 kg", FakeListChatModel(responses=["sorry, I can't help"]))
+
+
 def test_falls_back_to_rule_based_without_llm():
     assert _as_tuples(parse_shopping_list("salt 1 kg", llm=None)) == [("salt", 1.0, "kg")]
 

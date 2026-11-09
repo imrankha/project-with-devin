@@ -3,6 +3,7 @@ import logging
 import re
 from typing import Any
 
+from langchain_core.exceptions import OutputParserException
 from langchain_core.language_models import BaseChatModel
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -56,7 +57,10 @@ def _normalize(raw_items: list[dict[str, Any]]) -> list[ListItem]:
 
 def parse_with_llm(text: str, llm: BaseChatModel) -> list[ListItem]:
     chain = PROMPT | llm | JsonOutputParser()
-    result = chain.invoke({"text": text})
+    try:
+        result = chain.invoke({"text": text})
+    except OutputParserException as exc:
+        raise ParseError(f"LLM returned invalid JSON: {exc}") from exc
     raw_items = result.get("items") if isinstance(result, dict) else result
     if not isinstance(raw_items, list):
         raise ParseError(f"LLM returned unexpected payload: {result!r}")
