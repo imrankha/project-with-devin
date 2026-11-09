@@ -54,6 +54,12 @@ def test_llm_output_rejects_invalid_items(bad_item):
         parse_with_llm("whatever", llm)
 
 
+def test_llm_empty_list_is_rejected():
+    llm = FakeListChatModel(responses=['{"items": []}'])
+    with pytest.raises(ParseError):
+        parse_with_llm("hello", llm)
+
+
 def test_falls_back_to_rule_based_without_llm():
     assert _as_tuples(parse_shopping_list("salt 1 kg", llm=None)) == [("salt", 1.0, "kg")]
 

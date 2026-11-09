@@ -34,6 +34,8 @@ class ParseError(ValueError):
 
 
 def _normalize(raw_items: list[dict[str, Any]]) -> list[ListItem]:
+    if not raw_items:
+        raise ParseError("No items found in input")
     items: list[ListItem] = []
     for raw in raw_items:
         unit = normalize_unit(str(raw.get("unit", "pcs")))
