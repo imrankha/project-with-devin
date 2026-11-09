@@ -24,12 +24,19 @@ CREATE TABLE IF NOT EXISTS orders (
 class OrderStore:
     def __init__(self, path: str):
         self.path = path
-        if path != ":memory:":
+        # An in-memory database exists only on the connection that created it.
+        self._shared_conn: sqlite3.Connection | None = None
+        if path == ":memory:":
+            self._shared_conn = sqlite3.connect(path, check_same_thread=False)
+            self._shared_conn.row_factory = sqlite3.Row
+        else:
             Path(path).parent.mkdir(parents=True, exist_ok=True)
         with self._connect() as conn:
             conn.execute(_SCHEMA)
 
     def _connect(self) -> sqlite3.Connection:
+        if self._shared_conn is not None:
+            return self._shared_conn
         conn = sqlite3.connect(self.path)
         conn.row_factory = sqlite3.Row
         return conn
