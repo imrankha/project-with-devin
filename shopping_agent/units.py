@@ -8,15 +8,16 @@ _ALIASES = {
     "packs": "pack", "packet": "pack", "packets": "pack", "pkt": "pack",
 }
 
-# factor converting the unit to its base unit
+# factor converting the unit to its base unit; "pack" and "pcs" are both counts,
+# so an unspecified unit (defaults to pcs) still matches items sold per pack.
 _TO_BASE = {
     "kg": ("kg", 1.0),
     "g": ("kg", 0.001),
     "l": ("l", 1.0),
     "ml": ("l", 0.001),
-    "pcs": ("pcs", 1.0),
-    "dozen": ("pcs", 12.0),
-    "pack": ("pack", 1.0),
+    "pcs": ("count", 1.0),
+    "dozen": ("count", 12.0),
+    "pack": ("count", 1.0),
 }
 
 

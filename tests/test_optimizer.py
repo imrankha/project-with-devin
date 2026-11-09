@@ -77,6 +77,13 @@ def test_no_complete_site_yields_no_ranking():
     assert results[0].rank is None
 
 
+def test_unitless_count_matches_items_sold_per_pack():
+    items = [ListItem(item="bread", quantity=2, unit="pcs")]
+    quotes = [s.quote(items) for s in default_mock_sources()]
+    assert all(not q.missing_items for q in quotes)
+    assert {q.site: q.items[0].line_total for q in quotes}["ValueStore"] == 80.0
+
+
 def test_mock_sources_example_cart():
     items = [ListItem(item="sugar", quantity=2, unit="kg"), ListItem(item="rice", quantity=5, unit="kg")]
     r = by_site(optimize([s.quote(items) for s in default_mock_sources()]))
